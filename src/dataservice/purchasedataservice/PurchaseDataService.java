@@ -1,9 +1,11 @@
 package dataservice.purchasedataservice;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import dataservice.CommonDataService;
+import dataenum.ResultMessage;
+import dataenum.findtype.FindSalesType;
 import po.PurchasePO;
 
 /**  
@@ -12,11 +14,17 @@ import po.PurchasePO;
 * @author ****  
 * @date 2017Äê10ÔÂ22ÈÕ    
 */
-public interface PurchaseDataService extends CommonDataService<PurchasePO> {
+public interface PurchaseDataService extends Remote {
 
 	public static final String NAME = "PurchaseData";
 	
-	public String getPurchaseID() throws RemoteException;
+	public ResultMessage insertPurchase(PurchasePO po) throws RemoteException;
 	
-	public String getPurchaseBackID() throws RemoteException;
+	public ResultMessage deletePurchase(String ID) throws RemoteException;
+	
+	public ResultMessage updatePurchase(PurchasePO po) throws RemoteException;
+	
+	public ArrayList<PurchasePO> findPurchase(String keyword, FindSalesType type) throws RemoteException;
+	
+	public ArrayList<PurchasePO> showPurchase() throws RemoteException;
 }

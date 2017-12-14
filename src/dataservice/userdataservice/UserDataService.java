@@ -1,18 +1,25 @@
 package dataservice.userdataservice;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import dataenum.ResultMessage;
 import dataenum.findtype.FindUserType;
-import dataservice.CommonDataService;
 import po.UserPO;
 
-public interface UserDataService extends CommonDataService<UserPO> {
-
-	public static final String NAME = "UserData"; // rmiµÄÃû³Æ
+public interface UserDataService extends Remote {
 
 	public boolean login(String id, String password) throws RemoteException;
 
-	public ArrayList<UserPO> find(String info, FindUserType type) throws RemoteException;
+	public ArrayList<UserPO> findUser(String info, FindUserType type) throws RemoteException;
+	
+	public ResultMessage insertUser(UserPO po) throws RemoteException;
+	
+	public ResultMessage deleteUser(String ID) throws RemoteException;
+	
+	public ResultMessage updateUser(UserPO po) throws RemoteException;
+	
+	public ArrayList<UserPO> showUser() throws RemoteException;
 
 }

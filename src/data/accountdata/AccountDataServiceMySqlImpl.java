@@ -16,82 +16,38 @@ import po.PersistObject;
  * @version 2017-12-2
  * 
  */
-public class AccountDataServiceMySqlImpl extends UnicastRemoteObject implements AccountDataService{
+public class AccountDataServiceMySqlImpl  implements AccountDataService{
 
-	/** 
-	* <p>Title: </p> 
-	* <p>Description: </p> 
-	*/
-	private static final long serialVersionUID = -2234101610458753475L;
-	private AccountData account = null;
+	private AccountData account;
 	
-	protected AccountDataServiceMySqlImpl() throws RemoteException {
-		super();
-	}
-	
-	@Override
-	public ResultMessage createTable() throws RemoteException {
+	public AccountDataServiceMySqlImpl() {
 		account = new AccountData();
-		return account.createTable();
-	}
-	
-	@Override
-	public ResultMessage insert(AccountPO po) throws RemoteException {
-		account = new AccountData();
-		return account.insert(po);
 	}
 
 	@Override
-	public ResultMessage delete(String ID) throws RemoteException {
-		account = new AccountData();
-		return account.delete(ID);
+	public ArrayList<AccountPO> findAccount(String keywords, FindAccountType type) throws RemoteException {
+		return account.find(keywords, type);
 	}
 
 	@Override
-	public ResultMessage update(AccountPO po) throws RemoteException {
-		account = new AccountData();
-		return account.update(po);
-	}
-
-	@Override
-	public ArrayList<AccountPO> show() throws RemoteException {
-		account = new AccountData();
+	public ArrayList<AccountPO> showAccount() throws RemoteException {
 		return account.show();
 	}
 
 
 	@Override
-	public void init() throws RemoteException {
+	public ResultMessage insertAccount(AccountPO po) throws RemoteException {
+		return account.insert(po);
 	}
 
 	@Override
-	public String getID() throws RemoteException {
-		return null;
+	public ResultMessage deleteAccount(String id) throws RemoteException {
+		return account.delete(id);
 	}
 
 	@Override
-	public ArrayList<AccountPO> find(String keywords, FindAccountType type) throws RemoteException {
-		return null;
-	}
-
-	@Override
-	public ArrayList<AccountPO> getAccountList() {
-		return null;
-	}
-
-	@Override
-	public ResultMessage enterItem(ArrayList<String> idList, ArrayList<String> moneyList) {
-		return null;
-	}
-
-	@Override
-	public ResultMessage newBuild(PersistObject po) {
-		return null;
-	}
-
-	@Override
-	public ResultMessage saveChange(ArrayList<PersistObject> persistObjects) {
-		return null;
+	public ResultMessage updateAccount(AccountPO po) throws RemoteException {
+		return account.update(po);
 	}
 	
 	

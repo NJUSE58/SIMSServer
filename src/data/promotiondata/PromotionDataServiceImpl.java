@@ -4,62 +4,44 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-import dataenum.PromotionType;
 import dataenum.ResultMessage;
+import dataenum.findtype.FindPromotionType;
 import dataservice.promotiondataservice.PromotionDataService;
 import po.PromotionPO;
 
-public class PromotionDataServiceImpl extends UnicastRemoteObject implements PromotionDataService{
+public class PromotionDataServiceImpl implements PromotionDataService{
 
-	/** 
-	* <p>Title: </p> 
-	* <p>Description: </p> 
-	*/
-	private static final long serialVersionUID = -7653073542012573879L;
 	private PromotionData promotion;
 	
-	protected PromotionDataServiceImpl() throws RemoteException {
-		super();
+	public PromotionDataServiceImpl() {
+		promotion = new PromotionData();
+	}
+	
+
+	@Override
+	public ResultMessage insertPromotion(PromotionPO po) throws RemoteException {
+		return promotion.insert(po);
 	}
 
 	@Override
-	public ResultMessage insert(PromotionPO po) throws RemoteException {
-		return null;
+	public ResultMessage deletePromotion(String id) throws RemoteException {
+		return promotion.delete(id);
 	}
 
 	@Override
-	public ResultMessage delete(String ID) throws RemoteException {
-		return null;
+	public ResultMessage updatePromotion(PromotionPO po) throws RemoteException {
+		return promotion.update(po);
 	}
 
 	@Override
-	public ResultMessage update(PromotionPO po) throws RemoteException {
-		return null;
+	public ArrayList<PromotionPO> showPromotion() throws RemoteException {
+		return promotion.show();
 	}
 
 	@Override
-	public ArrayList<PromotionPO> show() throws RemoteException {
-		return null;
+	public ArrayList<PromotionPO> findPromotion(String keyword, FindPromotionType type) throws RemoteException {
+		return promotion.find(keyword, type);
 	}
 
-	@Override
-	public ResultMessage createTable() throws RemoteException {
-		return null;
-	}
-
-	@Override
-	public void init() throws RemoteException {
-	}
-
-	@Override
-	public String getID() throws RemoteException {
-		return null;
-	}
-
-
-	@Override
-	public ArrayList<PromotionPO> show(PromotionType type) throws RemoteException {
-		return null;
-	}
 
 }

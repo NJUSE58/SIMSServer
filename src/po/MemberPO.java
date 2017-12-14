@@ -1,12 +1,15 @@
 package po;
 
+import java.io.Serializable;
+
 import dataenum.MemberCategory;
 import dataenum.MemberLevel;
 import dataenum.UserRole;
 
-public class MemberPO extends PersistObject {
+public class MemberPO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5527693894433345344L;
+	private String id;
 	private MemberCategory category;
 	private MemberLevel level;
 	private String name;
@@ -19,27 +22,25 @@ public class MemberPO extends PersistObject {
 	private double payable; // 应付
 	private String saleMan; // 默认业务员
 
-	/**
-	 * @Description: TODO(这里用一句话描述这个方法的作用) @param @param id @param @param
-	 *               category @param @param level @param @param name @param @param
-	 *               phone @param @param adress @param @param post @param @param
-	 *               email @param @param rereceivableLimit @param @param saleMan
-	 *               设定文件 @return 返回类型 @throws
-	 */
-	public MemberPO(String id, MemberCategory category, MemberLevel level, String name, String phone, String adress,
+	
+	public MemberPO(String id, MemberCategory category, MemberLevel level, String name, String phone, String address,
 			String post, String email, double rereceivableLimit, String saleMan) {
-		super(id);
+		this.id = id;
 		this.category = category;
 		this.level = level;
 		this.name = name;
 		this.phone = phone;
-		this.address = adress;
+		this.address = address;
 		this.post = post;
 		this.email = email;
 		this.receivableLimit = rereceivableLimit;
 		this.saleMan = saleMan;
 	}
 
+	public String getId() {
+		return id;
+	}
+	
 	public MemberCategory getCategory() {
 		return category;
 	}

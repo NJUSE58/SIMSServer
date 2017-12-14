@@ -1,11 +1,11 @@
 package dataservice.accountdataservice;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import dataenum.ResultMessage;
 import dataenum.findtype.FindAccountType;
-import dataservice.CommonDataService;
 import po.AccountPO;
 import po.PersistObject;
 
@@ -21,12 +21,10 @@ import po.PersistObject;
 * @date 2017年12月3日 上午10:03:44 
 *
  */
-public interface AccountDataService extends CommonDataService<AccountPO>{
-	
-	public static final String NAME = "AccountData";
-	public ArrayList<AccountPO> find(String keywords, FindAccountType type) throws RemoteException;
-	public ArrayList<AccountPO> getAccountList();
-	public ResultMessage enterItem(ArrayList<String> idList, ArrayList<String> moneyList);
-	public ResultMessage newBuild(PersistObject po);
-	public ResultMessage saveChange(ArrayList<PersistObject> persistObjects);
+public interface AccountDataService extends Remote{
+	public ArrayList<AccountPO> findAccount(String keywords, FindAccountType type) throws RemoteException;
+	public ArrayList<AccountPO> showAccount() throws RemoteException;
+	public ResultMessage insertAccount(AccountPO po) throws RemoteException;
+	public ResultMessage deleteAccount(String id) throws RemoteException;
+	public ResultMessage updateAccount(AccountPO po) throws RemoteException;
 }

@@ -4,7 +4,10 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
+import dataenum.BillType;
 import dataenum.ResultMessage;
+import dataenum.Warehouse;
+import dataenum.findtype.FindSalesType;
 import dataservice.purchasedataservice.PurchaseDataService;
 import po.PurchasePO;
 
@@ -13,61 +16,54 @@ import po.PurchasePO;
 * @author Lijie 
 * @date 2017ƒÍ12‘¬8»’    
 */
-public class PurchaseDataServiceImpl extends UnicastRemoteObject implements PurchaseDataService{
+public class PurchaseDataServiceImpl implements PurchaseDataService{
 
-	private static final long serialVersionUID = 7329137070125442396L;
 	private PurchaseData purchase;
-	public PurchaseDataServiceImpl() throws RemoteException {
-		super();
-	}
-
-	@Override
-	public ResultMessage insert(PurchasePO po) throws RemoteException {
+	
+	public PurchaseDataServiceImpl() {
 		purchase = new PurchaseData();
+	}
+	
+	public static void main(String[] args) throws RemoteException {
+		PurchaseDataServiceImpl p = new PurchaseDataServiceImpl();
+		PurchasePO po1 = new PurchasePO("00001", "00011", "¿ÓΩ‹", Warehouse.WAREHOUSE1, "¡ı«’", null, "≤‚ ‘1", 10000, BillType.PURCHASEBILL);
+		PurchasePO po2 = new PurchasePO("00002", "00012", "Õı≤”≤”", Warehouse.WAREHOUSE2, "¡ı«’1", null, "≤‚ ‘2", 10000, BillType.PURCHASEBILL);
+		PurchasePO po3 = new PurchasePO("00003", "00013", "œﬂ¥˙", Warehouse.WAREHOUSE2, "¡ı«’2", null, "≤‚ ‘3", 10000, BillType.PURCHASEBILL);
+
+		p.insertPurchase(po1);
+		p.insertPurchase(po2);
+		p.insertPurchase(po3);
+//		p.deletePurchase("00003");
+		ArrayList<PurchasePO> list = p.showPurchase();
+		for (PurchasePO pu : list) {
+			System.out.println(pu.getId() + " " + pu.getMember());
+		}
+	}
+	
+	@Override
+	public ResultMessage insertPurchase(PurchasePO po) throws RemoteException {
 		return purchase.insert(po);
 	}
 
 	@Override
-	public ResultMessage delete(String ID) throws RemoteException {
-		purchase = new PurchaseData();
+	public ResultMessage deletePurchase(String ID) throws RemoteException {
 		return purchase.delete(ID);
 	}
 
 	@Override
-	public ResultMessage update(PurchasePO po) throws RemoteException {
-		purchase = new PurchaseData();
+	public ResultMessage updatePurchase(PurchasePO po) throws RemoteException {
 		return purchase.update(po);
 	}
 
 	@Override
-	public ArrayList<PurchasePO> show() throws RemoteException {
-		purchase = new PurchaseData();
+	public ArrayList<PurchasePO> showPurchase() throws RemoteException {
 		return purchase.show();
 	}
 
-	@Override
-	public ResultMessage createTable() throws RemoteException {
-		return null;
-	}
 
 	@Override
-	public void init() throws RemoteException {
-	}
-
-	@Override
-	public String getID() throws RemoteException {
-		return null;
-	}
-
-
-	@Override
-	public String getPurchaseID() throws RemoteException {
-		return null;
-	}
-
-	@Override
-	public String getPurchaseBackID() throws RemoteException {
-		return null;
+	public ArrayList<PurchasePO> findPurchase(String keyword, FindSalesType type) throws RemoteException {
+		return purchase.find(keyword, type);
 	}
 
 }

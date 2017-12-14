@@ -43,12 +43,21 @@ public class SalesData{
 		}
 	}
 	
-	public void insert(SalesPO po) throws RemoteException {
+	public ResultMessage insert(SalesPO po) throws RemoteException {
 		Connection conn = DBManager.getConnection();// 首先拿到数据库的连接
+		Statement ps0;
+		try {
+			ps0 = conn.createStatement();
+
+			ResultSet rs = ps0.executeQuery("select count(*) from userrole where id = " + po.getId());
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		int count = 0;
 		String sql = "" + "insert into sales values(?,?,?,?,?,?,?,?,?,?,?,?);";
 		try{
 			PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, po.getID());
+            ps.setString(1, po.getId());
             ps.setString(2, po.getClientId());
             ps.setString(3, po.getClientName());
             ps.setString(4, po.getSaleMan());
@@ -62,8 +71,12 @@ public class SalesData{
             ps.setString(12, String.valueOf(po.getType()));
             ps.setString(13, String.valueOf(po.getState()));
             ps.execute();
+            ps.close();
+            conn.close();
+            return ResultMessage.SUCCESS;
         }catch(SQLException e){
             e.printStackTrace();    
+            return ResultMessage.FAIL;
         }
 	}
 	
@@ -161,7 +174,7 @@ public class SalesData{
 	        ps.setString(10, po.getRemark());
 	        ps.setString(11, String.valueOf(po.getType()));
 	        ps.setString(12, String.valueOf(po.getState()));
-	        ps.setString(13, po.getID());
+	        ps.setString(13, po.getId());
 	        ps.execute();
 			return ResultMessage.SUCCESS;
 		} catch (SQLException e) {

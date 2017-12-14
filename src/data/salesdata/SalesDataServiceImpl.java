@@ -6,30 +6,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import dataenum.ResultMessage;
+import dataenum.findtype.FindSalesType;
 import dataservice.salesdataservice.SalesDataService;
 import po.SalesPO;
 
-public class SalesDataServiceImpl extends UnicastRemoteObject implements SalesDataService{
-	private static final long serialVersionUID = 1L;
-	SalesData sale = new SalesData();
-
-	public SalesDataServiceImpl() throws RemoteException {
-		super();
-	}
-
-	@Override
-	public ResultMessage createTable() throws RemoteException {
-		try {
-			sale.createTable();
-			return ResultMessage.SUCCESS;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResultMessage.FAIL;
-		}
-	}
+public class SalesDataServiceImpl implements SalesDataService{
 	
+	private SalesData sale;
+
 	@Override
-	public ResultMessage insert(SalesPO po) throws RemoteException {
+	public ResultMessage insertSale(SalesPO po) throws RemoteException {
+		sale = new SalesData();
 		try {
 			sale.insert(po);
 			return ResultMessage.SUCCESS;
@@ -40,12 +27,12 @@ public class SalesDataServiceImpl extends UnicastRemoteObject implements SalesDa
 	}
 
 	@Override
-	public ResultMessage delete(String ID) throws RemoteException {
+	public ResultMessage deleteSale(String ID) throws RemoteException {
 		return sale.delete(ID);
 	}
 
 	@Override
-	public ResultMessage update(SalesPO po) throws RemoteException {
+	public ResultMessage updateSale(SalesPO po) throws RemoteException {
 		try {
 			return sale.update(po);
 		}catch (Exception e) {
@@ -55,7 +42,7 @@ public class SalesDataServiceImpl extends UnicastRemoteObject implements SalesDa
 	}
 
 	@Override
-	public ArrayList<SalesPO> show() throws RemoteException {
+	public ArrayList<SalesPO> showSale() throws RemoteException {
 		try {
 			return sale.show();
 		}catch (Exception e) {
@@ -64,17 +51,10 @@ public class SalesDataServiceImpl extends UnicastRemoteObject implements SalesDa
 		return null;
 	}
 
-
 	@Override
-	public void init() throws RemoteException {
-	}
-
-	@Override
-	public String getID() throws RemoteException {
+	public ArrayList<SalesPO> findSale(String info, FindSalesType type) throws RemoteException {
 		return null;
 	}
-
-	
 
 	@Override
 	public String getSaleID() throws RemoteException {
@@ -85,7 +65,6 @@ public class SalesDataServiceImpl extends UnicastRemoteObject implements SalesDa
 	public String getSaleBackID() throws RemoteException {
 		return null;
 	}
-
 	
 } 
 

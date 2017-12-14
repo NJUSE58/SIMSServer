@@ -1,9 +1,10 @@
 package dataservice.checktabledataservice;
 
-import dataservice.CommonDataService;
+import java.rmi.Remote;
+
 import po.table.SaleSchedulePO;
 
-public interface SaleScheduleDataService extends CommonDataService<SaleSchedulePO>{
+public interface SaleScheduleDataService extends Remote{
 	public static final String NAME = "SaleScheduleData";
 	
 	public void viewReport(SaleSchedulePO saleSchedulePO);

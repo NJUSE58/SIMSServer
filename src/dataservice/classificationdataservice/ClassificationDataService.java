@@ -1,12 +1,12 @@
 package dataservice.classificationdataservice;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import dataservice.CommonDataService;
 import po.ClassificationPO;
 
 
-public interface ClassificationDataService extends CommonDataService<ClassificationPO> {
+public interface ClassificationDataService extends Remote {
 
 	public static final String NAME = "ClassificationData";
 	

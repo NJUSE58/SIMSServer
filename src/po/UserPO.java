@@ -6,9 +6,10 @@ import java.io.Serializable;
 import dataenum.UserRole;
 import javafx.scene.image.ImageView;
 
-public class UserPO extends PersistObject implements Serializable{
+public class UserPO implements Serializable{
 
 	private static final long serialVersionUID = -554010814150465068L;
+	private String id;
 	private String name;
 	private String password;
 	private UserRole role;
@@ -16,7 +17,7 @@ public class UserPO extends PersistObject implements Serializable{
 
 
 	public UserPO(String id, String name, String password, UserRole role, ImageView image) {
-		super(id);
+		this.id = id;
 		this.name = name;
 		this.password = password;
 		this.role = role;
@@ -24,6 +25,11 @@ public class UserPO extends PersistObject implements Serializable{
 	}
 
 
+	public String getID() {
+		return id;
+	}
+	
+	
 	public String getName() {
 		return name;
 	}
@@ -40,4 +46,8 @@ public class UserPO extends PersistObject implements Serializable{
 		return image;
 	}
 
+	@Override
+	public String toString() {
+		return id+" "+name+" "+password+" "+role;
+	}
 }

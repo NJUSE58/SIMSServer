@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import data.DBManager;
+import dataenum.ResultMessage;
+import dataenum.findtype.FindMemberType;
 import po.MemberPO;
 
 /**
@@ -22,56 +24,67 @@ import po.MemberPO;
  */
 public class MemberData {
 
-	public void insert(MemberPO po) {
+	public ResultMessage insert(MemberPO po) {
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "insert into Member (object) values (?)";
+		String sql = "" + "insert into Member (id, object) values (?,?)";
 		try {
 			conn.setAutoCommit(false);
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setObject(1, po);
+			ps.setString(1, po.getId());
+			ps.setObject(2, po);
 			ps.executeUpdate();
 			conn.commit();
+			ps.close();
+			conn.close();
+			return ResultMessage.SUCCESS;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return ResultMessage.FAIL;
 		}
 	}
 
-	public void delete(String id) {
+	public ResultMessage delete(String id) {
 		Connection conn = DBManager.getConnection();
 		String sql = "" + "delete from member where id = ?";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, id);
 			ps.execute();
-
+			ps.close();
+			conn.close();
+			return ResultMessage.SUCCESS;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return ResultMessage.FAIL;
 		}
 	}
 
-	public void update(MemberPO po) {
+	public ResultMessage update(MemberPO po) {
 		Connection conn = DBManager.getConnection();
 		String sql = "" + "update member set object = ? where id = ?";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setObject(1, po);
-			ps.setString(2, po.getID());
+			ps.setString(2, po.getId());
 			ps.executeUpdate();
+			ps.close();
+			conn.close();
+			return ResultMessage.SUCCESS;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return ResultMessage.FAIL;
 		}
 	}
 
-	public MemberPO find(String id) {
-		MemberPO po = null;
+	public ArrayList<MemberPO> find(String keyword, FindMemberType type) {
+		ArrayList<MemberPO> list = new ArrayList<>();
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "select * from member where id = ?";
+		String sql = "" + "select object from member";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, id);
 			ResultSet rs = ps.executeQuery();
 
-			if (rs.next()) {
+			while (rs.next()) {
 				// 以下是读取的方法一定要注意了！
 				try {
 					Blob inblob = (Blob) rs.getBlob("object");
@@ -83,19 +96,61 @@ public class MemberData {
 
 					ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buff));
 
-					po = (MemberPO) in.readObject();
+					MemberPO po = (MemberPO) in.readObject();
+					
+					switch (type) {
+					case ADDRESS: 
+						if (keyword.equals(po.getAddress())) list.add(po);
+						break;
+					case ID:
+						if (keyword.equals(po.getId())) list.add(po);
+						break;
+					case EMAIL:
+						if (keyword.equals(po.getEmail())) list.add(po);
+						break;
+					case NAME: 
+						if (keyword.equals(po.getName())) list.add(po);
+						break;
+					case LEVEL: 
+						if (keyword.equals(po.getLevel().value)) list.add(po);
+						break;
+					case KIND:
+						if (keyword.equals(po.getCategory().value)) list.add(po);
+						break;
+					case PHONE: 
+						if (keyword.equals(po.getPhone())) list.add(po);
+						break;
+					case POST: 
+						if (keyword.equals(po.getPost())) list.add(po);
+						break;
+					case PAYABLE:
+						if (po.getPayable() == Double.parseDouble(keyword)) list.add(po);
+						break;
+					case RECEIVABLE: 
+						if (po.getReceivable() == Double.parseDouble(keyword)) list.add(po);
+						break;
+					case RECEIVABLELIMIT:
+						if (po.getRereceivableLimit() == Double.parseDouble(keyword)) list.add(po);
+						break;
+					case SALESMAN:
+						if (keyword.equals(po.getSaleMan())) list.add(po);
+						break;
+					default:
+						break;
+					}
+					
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
-				} // 从IO流中读取出来.可以得到一个对象了
-
+				} 
+				
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return po;
+		return list;
 	}
 	
 	public ArrayList<MemberPO> show() {

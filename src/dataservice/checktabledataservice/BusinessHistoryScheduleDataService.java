@@ -1,14 +1,15 @@
 package dataservice.checktabledataservice;
 
-import dataservice.CommonDataService;
+import java.rmi.Remote;
+
 import po.PersistObject;
-import po.makefinancialdoc.FinancialDocPO;
+import po.FinancialBill.FinancialDocPO;
 import po.table.BusinessHistorySchedulePO;
 
 /**
  * 查看经营历程表
  */
-public interface BusinessHistoryScheduleDataService extends CommonDataService<BusinessHistorySchedulePO>{
+public interface BusinessHistoryScheduleDataService extends Remote {
 	public static final String NAME = "BusinessHistoryScheduleData";
 	
 	public FinancialDocPO viewReport(BusinessHistorySchedulePO businessHistorySchedulePO);

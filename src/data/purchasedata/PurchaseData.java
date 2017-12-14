@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import data.DBManager;
 import dataenum.ResultMessage;
+import dataenum.findtype.FindSalesType;
 import po.PurchasePO;
 
 
@@ -26,11 +27,12 @@ public class PurchaseData {
 
 	public ResultMessage insert(PurchasePO po) {
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "insert into purchase(object) value(?)";
+		String sql = "" + "insert into purchase(id,object) value(?, ?)";
 		try {
 			conn.setAutoCommit(false);
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setObject(1, po);
+			ps.setString(1, po.getId());
+			ps.setObject(2, po);
 			ps.executeUpdate();
 			conn.commit();
 			ps.close();
@@ -65,7 +67,7 @@ public class PurchaseData {
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setObject(1, po);
-			ps.setString(2, po.getID());
+			ps.setString(2, po.getId());
 			ps.executeUpdate();
 			ps.close();
 			conn.close();
@@ -76,16 +78,15 @@ public class PurchaseData {
 		}
 	}
 	
-	public PurchasePO find(String id) {
-		PurchasePO po = null;
+	public ArrayList<PurchasePO> find(String keyword, FindSalesType type) {
+		ArrayList<PurchasePO> list = new ArrayList<>();
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "select * from purchase where id = ?";
+		String sql = "" + "select object from purchase";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, id);
 			ResultSet rs = ps.executeQuery();
 
-			if (rs.next()) {
+			while (rs.next()) {
 				// 以下是读取的方法一定要注意了！
 				Blob inblob = (Blob) rs.getBlob("object");
 				InputStream is = inblob.getBinaryStream();
@@ -95,14 +96,35 @@ public class PurchaseData {
 				while (-1 != (input.read(buff, 0, buff.length)));
 
 				ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buff));
-				po = (PurchasePO) in.readObject();
+				PurchasePO po = (PurchasePO) in.readObject();
+				
+				switch (type) {
+				case ID:
+					if (keyword.equals(po.getId())) list.add(po);
+					break;
+				case MEMBER:
+					if (keyword.equals(po.getMember())) list.add(po);
+					break;
+				case TOTAL:
+					if (Double.parseDouble(keyword) == po.getSum()) list.add(po);
+					break;
+				case OPERATOR:
+					if (keyword.equals(po.getOperator())) list.add(po);
+					break;
+
+				default:
+					break;
+				}
 			}
+			
+			ps.close();
+			conn.close();
 					
 		}catch (SQLException | IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}  
 				
-		return po;
+		return list;
 	}
 	
 	public ArrayList<PurchasePO> show() {
