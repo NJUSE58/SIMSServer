@@ -1,11 +1,14 @@
 package po.commodity;
 
+import java.io.Serializable;
+
 import po.ClassificationPO;
 import po.PersistObject;
 
-public class CommodityPO extends PersistObject {
+public class CommodityPO implements Serializable{
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6035519417985941664L;
+	private String id;
 	private String name;
 	private String model; // …Ã∆∑–Õ∫≈
 	private ClassificationPO classification;
@@ -24,7 +27,7 @@ public class CommodityPO extends PersistObject {
 	 */
 	public CommodityPO(String id, String name, String model, ClassificationPO classification, int number,
 			double purPrice, double retailedPrice, int warmingValue) {
-		super(id);
+		this.id = id;
 		this.name = name;
 		this.model = model;
 		this.classification = classification;
@@ -34,12 +37,17 @@ public class CommodityPO extends PersistObject {
 		this.warmingValue = warmingValue;
 	}
 
+	
 	public ClassificationPO getClassification() {
 		return classification;
 	}
 
 	public void setClassification(ClassificationPO classification) {
 		this.classification = classification;
+	}
+	
+	public String getId() {
+		return id;
 	}
 
 	public String getName() {

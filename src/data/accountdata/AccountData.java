@@ -21,42 +21,52 @@ import dataenum.ResultMessage;
 import dataenum.findtype.FindAccountType;
 import po.AccountPO;
 
-/**     
-*  
-* @author Lijie 
-* @date 2017年12月3日    
-*/
+/**
+ * 
+ * @author Lijie
+ * @date 2017年12月3日
+ */
 public class AccountData {
-//	public static void main(String[] args) throws RemoteException {
-//		AccountData a = new AccountData();
-//		AccountPO po = new AccountPO("000007", "王灿灿", 4000);
-//		a.delete("000005");
-//		ArrayList<AccountPO> list = a.show();
-//		for (AccountPO p : list) {
-//			System.out.println(p.getId() + " " + p.getName() + " " + p.getMoney());
-//		}
-//		
-//	}
+	// public static void main(String[] args) throws RemoteException {
+	// AccountData a = new AccountData();
+	// AccountPO po = new AccountPO("000007", "王灿灿", 4000);
+	// a.delete("000005");
+	// ArrayList<AccountPO> list = a.show();
+	// for (AccountPO p : list) {
+	// System.out.println(p.getId() + " " + p.getName() + " " + p.getMoney());
+	// }
+	//
+	// }
 
 	public ResultMessage insert(AccountPO po) {
 		Connection conn = DBManager.getConnection();// 首先拿到数据库的连接
-		String sql = "" + "insert into account(id, object) values (?,?)";
-		try{
-			conn.setAutoCommit(false);
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, po.getId());
-            ps.setObject(2, po);
-            ps.executeUpdate();
-            conn.commit();
-            ps.close();
-            conn.close();
-            return ResultMessage.SUCCESS;
-        }catch(SQLException e){
-            e.printStackTrace();    
-        }
+		try {
+			Statement ps0 = conn.createStatement();
+			ResultSet rs = ps0.executeQuery("select count(*) from account where id = " + po.getId());
+			int count = 0;
+			if (rs.next()) {
+				count = rs.getInt(1);
+				if (count == 0) {
+					String sql = "" + "insert into account(id, object) values (?,?)";
+					conn.setAutoCommit(false);
+					PreparedStatement ps = conn.prepareStatement(sql);
+					ps.setString(1, po.getId());
+					ps.setObject(2, po);
+					ps.executeUpdate();
+					conn.commit();
+					ps.close();
+					conn.close();
+					return ResultMessage.SUCCESS;
+				}
+				else {
+					System.out.println("该账户已存在");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return ResultMessage.FAIL;
 	}
-	
 
 	public ResultMessage delete(String id) {
 		Connection conn = DBManager.getConnection();
@@ -98,31 +108,30 @@ public class AccountData {
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
-			while(rs.next()) {
-				Blob inBlob = (Blob) rs.getBlob("object");   //获取blob对象 
-				InputStream is = inBlob.getBinaryStream();                //获取二进制流对象  
-                BufferedInputStream bis = new BufferedInputStream(is);    //带缓冲区的流对象  
-                byte[] buff = new byte[(int) inBlob.length()];
-                
-                while(-1!=(bis.read(buff, 0, buff.length))){            //一次性全部读到buff中  
-                    ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(buff));  
-                    AccountPO po = (AccountPO)in.readObject();                   //读出对象  
-                      
-                    list.add(po);  
-                }  
+			while (rs.next()) {
+				Blob inBlob = (Blob) rs.getBlob("object"); // 获取blob对象
+				InputStream is = inBlob.getBinaryStream(); // 获取二进制流对象
+				BufferedInputStream bis = new BufferedInputStream(is); // 带缓冲区的流对象
+				byte[] buff = new byte[(int) inBlob.length()];
+
+				while (-1 != (bis.read(buff, 0, buff.length))) { // 一次性全部读到buff中
+					ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buff));
+					AccountPO po = (AccountPO) in.readObject(); // 读出对象
+
+					list.add(po);
+				}
 			}
 			rs.close();
 			ps.close();
 			conn.close();
 		} catch (SQLException | IOException | ClassNotFoundException e) {
 			e.printStackTrace();
-		}  
+		}
 		return list;
-		
+
 	}
 
-
-	public ArrayList<AccountPO> find(String keyword, FindAccountType type) { 
+	public ArrayList<AccountPO> find(String keyword, FindAccountType type) {
 		ArrayList<AccountPO> list = new ArrayList<>();
 		AccountPO po = null;
 		Connection conn = DBManager.getConnection();
@@ -138,28 +147,28 @@ public class AccountData {
 				BufferedInputStream input = new BufferedInputStream(is);
 
 				byte[] buff = new byte[(int) inblob.length()];// 放到一个buff 字节数组
-				while (-1 != (input.read(buff, 0, buff.length)));
+				while (-1 != (input.read(buff, 0, buff.length)))
+					;
 
 				ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buff));
 				po = (AccountPO) in.readObject();
-				
+
 				if (type == FindAccountType.ID) {
-					if (keyword.equals(po.getId())) list.add(po);
-				}
-				else if (type == FindAccountType.NAME) {
-					if (keyword.equals(po.getName())) list.add(po);
-				}
-				else {
-					if (Double.parseDouble(keyword) == po.getMoney()) list.add(po);
+					if (keyword.equals(po.getId()))
+						list.add(po);
+				} else if (type == FindAccountType.NAME) {
+					if (keyword.equals(po.getName()))
+						list.add(po);
+				} else {
+					if (Double.parseDouble(keyword) == po.getMoney())
+						list.add(po);
 				}
 			}
-					
-		}catch (SQLException | IOException | ClassNotFoundException e) {
+
+		} catch (SQLException | IOException | ClassNotFoundException e) {
 			e.printStackTrace();
-		}  
+		}
 		return list;
 	}
 
-
-	
 }

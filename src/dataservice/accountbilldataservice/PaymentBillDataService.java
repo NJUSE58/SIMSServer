@@ -5,6 +5,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import dataenum.BillType;
+import dataenum.ResultMessage;
+import dataenum.findtype.FindAccountBillType;
 import po.FinancialBill.PaymentBillPO;
 
 /**  
@@ -22,10 +24,16 @@ import po.FinancialBill.PaymentBillPO;
 *
  */
 public interface PaymentBillDataService extends Remote {
-
-    public static final String NAME = "PaymentBillData";
 	
-	public ArrayList<PaymentBillPO> show(BillType type) throws RemoteException;
+	public ResultMessage insertPaymentBill(PaymentBillPO po) throws RemoteException;
+	
+	public ResultMessage deletePaymentBill(String id) throws RemoteException;
+	
+	public ResultMessage updatePaymentBill(PaymentBillPO po) throws RemoteException;
+	
+	public ArrayList<PaymentBillPO> findPaymentBill(String keyword, FindAccountBillType type) throws RemoteException;
+	
+	public ArrayList<PaymentBillPO> showPaymentBill() throws RemoteException;
 
 	
 }

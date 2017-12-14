@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import data.DBManager;
@@ -25,22 +26,36 @@ import po.MemberPO;
 public class MemberData {
 
 	public ResultMessage insert(MemberPO po) {
-		Connection conn = DBManager.getConnection();
-		String sql = "" + "insert into Member (id, object) values (?,?)";
+		Connection conn = DBManager.getConnection();// 首先拿到数据库的连接
 		try {
-			conn.setAutoCommit(false);
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, po.getId());
-			ps.setObject(2, po);
-			ps.executeUpdate();
-			conn.commit();
-			ps.close();
-			conn.close();
-			return ResultMessage.SUCCESS;
+			Statement ps0 = conn.createStatement();
+			ResultSet rs = ps0.executeQuery("select count(*) from member where id = " + po.getId());
+			int count = 0;
+			if (rs.next()) {
+				count = rs.getInt(1);
+				if (count == 0) {
+					String sql = "" + "insert into Member (id, object) values (?,?)";
+					conn.setAutoCommit(false);
+					PreparedStatement ps = conn.prepareStatement(sql);
+					ps.setString(1, po.getId());
+					ps.setObject(2, po);
+					ps.executeUpdate();
+					conn.commit();
+					ps.close();
+					conn.close();
+					return ResultMessage.SUCCESS;
+				}
+				else {
+					System.out.println("该客户已存在");
+					return ResultMessage.FAIL;
+				}
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return ResultMessage.FAIL;
 		}
+		return ResultMessage.FAIL;
+
 	}
 
 	public ResultMessage delete(String id) {
@@ -92,59 +107,72 @@ public class MemberData {
 					BufferedInputStream input = new BufferedInputStream(is);
 
 					byte[] buff = new byte[(int) inblob.length()];// 放到一个buff 字节数组
-					while (-1 != (input.read(buff, 0, buff.length)));
+					while (-1 != (input.read(buff, 0, buff.length)))
+						;
 
 					ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buff));
 
 					MemberPO po = (MemberPO) in.readObject();
-					
+
 					switch (type) {
-					case ADDRESS: 
-						if (keyword.equals(po.getAddress())) list.add(po);
+					case ADDRESS:
+						if (keyword.equals(po.getAddress()))
+							list.add(po);
 						break;
 					case ID:
-						if (keyword.equals(po.getId())) list.add(po);
+						if (keyword.equals(po.getId()))
+							list.add(po);
 						break;
 					case EMAIL:
-						if (keyword.equals(po.getEmail())) list.add(po);
+						if (keyword.equals(po.getEmail()))
+							list.add(po);
 						break;
-					case NAME: 
-						if (keyword.equals(po.getName())) list.add(po);
+					case NAME:
+						if (keyword.equals(po.getName()))
+							list.add(po);
 						break;
-					case LEVEL: 
-						if (keyword.equals(po.getLevel().value)) list.add(po);
+					case LEVEL:
+						if (keyword.equals(po.getLevel().value))
+							list.add(po);
 						break;
 					case KIND:
-						if (keyword.equals(po.getCategory().value)) list.add(po);
+						if (keyword.equals(po.getCategory().value))
+							list.add(po);
 						break;
-					case PHONE: 
-						if (keyword.equals(po.getPhone())) list.add(po);
+					case PHONE:
+						if (keyword.equals(po.getPhone()))
+							list.add(po);
 						break;
-					case POST: 
-						if (keyword.equals(po.getPost())) list.add(po);
+					case POST:
+						if (keyword.equals(po.getPost()))
+							list.add(po);
 						break;
 					case PAYABLE:
-						if (po.getPayable() == Double.parseDouble(keyword)) list.add(po);
+						if (po.getPayable() == Double.parseDouble(keyword))
+							list.add(po);
 						break;
-					case RECEIVABLE: 
-						if (po.getReceivable() == Double.parseDouble(keyword)) list.add(po);
+					case RECEIVABLE:
+						if (po.getReceivable() == Double.parseDouble(keyword))
+							list.add(po);
 						break;
 					case RECEIVABLELIMIT:
-						if (po.getRereceivableLimit() == Double.parseDouble(keyword)) list.add(po);
+						if (po.getRereceivableLimit() == Double.parseDouble(keyword))
+							list.add(po);
 						break;
 					case SALESMAN:
-						if (keyword.equals(po.getSaleMan())) list.add(po);
+						if (keyword.equals(po.getSaleMan()))
+							list.add(po);
 						break;
 					default:
 						break;
 					}
-					
+
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
-				} 
-				
+				}
+
 			}
 
 		} catch (SQLException e) {
@@ -152,7 +180,7 @@ public class MemberData {
 		}
 		return list;
 	}
-	
+
 	public ArrayList<MemberPO> show() {
 		ArrayList<MemberPO> list = new ArrayList<>();
 		Connection conn = DBManager.getConnection();
@@ -160,23 +188,23 @@ public class MemberData {
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
-			while(rs.next()) {
-				Blob inBlob = (Blob) rs.getBlob("object");   //获取blob对象 
-				InputStream is = inBlob.getBinaryStream();                //获取二进制流对象  
-                BufferedInputStream bis = new BufferedInputStream(is);    //带缓冲区的流对象  
-                byte[] buff = new byte[(int) inBlob.length()];
-                
-                while(-1!=(bis.read(buff, 0, buff.length))){            //一次性全部读到buff中  
-                    ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(buff));  
-                    MemberPO po = (MemberPO)in.readObject();                   //读出对象  
-                      
-                    list.add(po);  
-                }  
+			while (rs.next()) {
+				Blob inBlob = (Blob) rs.getBlob("object"); // 获取blob对象
+				InputStream is = inBlob.getBinaryStream(); // 获取二进制流对象
+				BufferedInputStream bis = new BufferedInputStream(is); // 带缓冲区的流对象
+				byte[] buff = new byte[(int) inBlob.length()];
+
+				while (-1 != (bis.read(buff, 0, buff.length))) { // 一次性全部读到buff中
+					ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buff));
+					MemberPO po = (MemberPO) in.readObject(); // 读出对象
+
+					list.add(po);
+				}
 			}
 		} catch (SQLException | IOException | ClassNotFoundException e) {
 			e.printStackTrace();
-		}  
+		}
 		return list;
-		
+
 	}
 }

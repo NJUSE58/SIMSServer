@@ -1,4 +1,4 @@
-package data.userdata;
+package data.receiptbilldata;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -15,38 +15,26 @@ import java.util.ArrayList;
 
 import data.DBManager;
 import dataenum.ResultMessage;
-import dataenum.UserRole;
-import dataenum.findtype.FindUserType;
-import po.UserPO;
+import dataenum.findtype.FindAccountBillType;
+import po.FinancialBill.ReceiptBillPO;
 
 /**     
 *  
 * @author Lijie 
-* @date 2017年12月7日    
+* @date 2017年12月14日    
 */
-public class UserData {
-	public static void main(String[] args) {
-		UserData user = new UserData();
-		UserPO po = new UserPO("000004", "王灿灿", "1245678", UserRole.FINANCIAL_MANAGER, null);
-//		user.delete("00002");
-		user.insert(po);
-		ArrayList<UserPO> list = user.show();
-		System.out.println("555");
-		for(UserPO u: list) {
-			System.out.println(u.toString());
-		}	
-	}
-	
-	public ResultMessage insert(UserPO po) {
+public class ReceiptBillData {
+
+	public ResultMessage insert(ReceiptBillPO po) {
 		Connection conn = DBManager.getConnection();// 首先拿到数据库的连接
 		try {
 			Statement ps0 = conn.createStatement();
-			ResultSet rs = ps0.executeQuery("select count(*) from userrole where id = " + po.getID());
+			ResultSet rs = ps0.executeQuery("select count(*) from receiptbill where id = " + po.getID());
 			int count = 0;
 			if (rs.next()) {
 				count = rs.getInt(1);
 				if (count == 0) {
-					String sql = "" + "insert into userrole(id, object) values (?,?)";
+					String sql = "" + "insert into receiptbill(id, object) values (?,?)";
 					
 					conn.setAutoCommit(false);
 					PreparedStatement ps = conn.prepareStatement(sql);
@@ -59,7 +47,7 @@ public class UserData {
 			        return ResultMessage.SUCCESS;
 				}
 				else {
-					System.out.println("客户ID已存在");
+					System.out.println("该收款单已存在");
 				}
 			}
 			
@@ -72,7 +60,7 @@ public class UserData {
 	
 	public ResultMessage delete(String id)  {
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "delete from userrole where id = ?";
+		String sql = "" + "delete from receiptbill where id = ?";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, id);
@@ -86,12 +74,11 @@ public class UserData {
 		}
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
-	public ArrayList<UserPO> find(String keyword, FindUserType type) {
-		ArrayList<UserPO> list = new ArrayList<>();
-		UserPO po = null;
+	public ArrayList<ReceiptBillPO> find(String keyword, FindAccountBillType type) {
+		ArrayList<ReceiptBillPO> list = new ArrayList<>();
+		ReceiptBillPO po = null;
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "select object from userrole";
+		String sql = "" + "select object from receiptbill";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
@@ -106,23 +93,9 @@ public class UserData {
 				while (-1 != (input.read(buff, 0, buff.length)));
 
 				ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buff));
-				po = (UserPO) in.readObject();
+				po = (ReceiptBillPO) in.readObject();
 				
-				if(type == FindUserType.ID) {
-					if(keyword.equals(po.getID())) {
-						list.add(po);
-					}
-				}
-				else if (type == FindUserType.NAME) {
-					if(keyword.equals(po.getName())) {
-						list.add(po);
-					}
-				}
-				else if (type == FindUserType.USERROLE) {
-					if(keyword.equals(po.getRole())) {
-						list.add(po);
-					}
-				}
+				list.add(po);
 				
 			}
 					
@@ -132,9 +105,9 @@ public class UserData {
 		return list;
 	}
 	
-	public ResultMessage update(UserPO po) {
+	public ResultMessage update(ReceiptBillPO po) {
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "update userrole set object = ? where id = ?";
+		String sql = "" + "update receiptbill set object = ? where id = ?";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setObject(1, po);
@@ -149,10 +122,10 @@ public class UserData {
 		}
 	}
 	
-	public ArrayList<UserPO> show() {
-		ArrayList<UserPO> list = new ArrayList<>();
+	public ArrayList<ReceiptBillPO> show() {
+		ArrayList<ReceiptBillPO> list = new ArrayList<>();
 		Connection conn = DBManager.getConnection();
-		String sql = "select object from userrole";
+		String sql = "select object from receiptbill";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
@@ -164,7 +137,7 @@ public class UserData {
                 
                 while(-1!=(bis.read(buff, 0, buff.length))){            //一次性全部读到buff中  
                     ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(buff));  
-                    UserPO po = (UserPO)in.readObject();                   //读出对象  
+                    ReceiptBillPO po = (ReceiptBillPO)in.readObject();                   //读出对象  
                       
                     list.add(po);  
                 }  
@@ -178,5 +151,4 @@ public class UserData {
 		return list;
 		
 	}
-
 }

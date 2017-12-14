@@ -4,15 +4,20 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import dataenum.ResultMessage;
 import dataenum.findtype.FindCommodityType;
 import po.commodity.CommodityPO;
 
 public interface CommodityDataService extends Remote {
-	
-	public String getID(String fatherID) throws RemoteException;
 
-	public ArrayList<String> getAllID() throws RemoteException;
+	public ResultMessage insertCommodity(CommodityPO po) throws RemoteException;
 
-	public ArrayList<CommodityPO> find(String keywords, FindCommodityType type) throws RemoteException;
+	public ResultMessage updateCommodity(CommodityPO po) throws RemoteException;
+
+	public ResultMessage daleteCommodity(String id) throws RemoteException;
+
+	public ArrayList<CommodityPO> showCommodity() throws RemoteException;
+
+	public ArrayList<CommodityPO> findCommodity(String keywords, FindCommodityType type) throws RemoteException;
 
 }

@@ -1,4 +1,4 @@
-package data.promotiondata;
+package data.classificationdata;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -15,30 +15,30 @@ import java.util.ArrayList;
 
 import data.DBManager;
 import dataenum.ResultMessage;
-import dataenum.findtype.FindPromotionType;
-import po.PromotionPO;
+import po.ClassificationPO;
+import po.UserPO;
 
 /**     
 *  
 * @author Lijie 
-* @date 2017年12月6日    
+* @date 2017年12月14日    
 */
-public class PromotionData {
+public class ClassificationData {
 
-	public ResultMessage insert(PromotionPO po) {
+	public ResultMessage insert(ClassificationPO po) {
 		Connection conn = DBManager.getConnection();// 首先拿到数据库的连接
 		try {
 			Statement ps0 = conn.createStatement();
-			ResultSet rs = ps0.executeQuery("select count(*) from promotion where id = " + po.getId());
+			ResultSet rs = ps0.executeQuery("select count(*) from classification where id = " + po.getID());
 			int count = 0;
 			if (rs.next()) {
 				count = rs.getInt(1);
 				if (count == 0) {
-					String sql = "" + "insert into promotion(id, object) values (?,?)";
+					String sql = "" + "insert into classification(id, object) values (?,?)";
 					
 					conn.setAutoCommit(false);
 					PreparedStatement ps = conn.prepareStatement(sql);
-					ps.setString(1, po.getId());
+					ps.setString(1, po.getID());
 			        ps.setObject(2, po);
 			        ps.executeUpdate();
 			        conn.commit();
@@ -47,7 +47,7 @@ public class PromotionData {
 			        return ResultMessage.SUCCESS;
 				}
 				else {
-					System.out.println("促销策略ID已存在");
+					System.out.println("客户ID已存在");
 				}
 			}
 			
@@ -58,9 +58,9 @@ public class PromotionData {
 		return ResultMessage.FAIL;
 	}
 	
-	public ResultMessage delete(String id) {
+	public ResultMessage delete(String id)  {
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "delete from promotion where id = ?";
+		String sql = "" + "delete from calssification where id = ?";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, id);
@@ -74,13 +74,13 @@ public class PromotionData {
 		}
 	}
 	
-	public ResultMessage update(PromotionPO po) {
+	public ResultMessage update(ClassificationPO po) {
 		Connection conn = DBManager.getConnection();
-		String sql = "" + "update promotion set object = ? where id = ?";
+		String sql = "" + "update classification set object = ? where id = ?";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setObject(1, po);
-			ps.setString(2, po.getId());
+			ps.setString(2, po.getID());
 			ps.executeUpdate();
 			ps.close();
 			conn.close();
@@ -91,11 +91,10 @@ public class PromotionData {
 		}
 	}
 	
-	
-	public ArrayList<PromotionPO> find(String keyword, FindPromotionType type) {
-		ArrayList<PromotionPO> list = new ArrayList<PromotionPO>();
+	public ArrayList<ClassificationPO> find(String keyword) {
+		ArrayList<ClassificationPO> list = new ArrayList<>();
 		Connection conn = DBManager.getConnection();
-		String sql = "select object from promotion";
+		String sql = "select object from classification";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
@@ -106,22 +105,11 @@ public class PromotionData {
                 byte[] buff = new byte[(int) inBlob.length()];
                 
                 while(-1!=(bis.read(buff, 0, buff.length))){            //一次性全部读到buff中  
-                    ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(buff)); 
-                    PromotionPO po = (PromotionPO) in.readObject();
-                    switch (type) {
-					case TYPE:
-						if (keyword.equals(po.getType().value)) list.add(po);
-						break;
-					case ID:
-						if (keyword.equals(po.getId())) list.add(po);
-						break;
-					case TIMEINTERVAL:
-						if (keyword.equals(po.getBeginDate())) list.add(po);
-						break;
-					default:
-						break;
-					}
-               }
+                    ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(buff));  
+                    ClassificationPO po = (ClassificationPO)in.readObject();                   //读出对象  
+                    
+                    list.add(po);  
+                }  
 			}
 			rs.close();
 			ps.close();
@@ -130,12 +118,13 @@ public class PromotionData {
 			e.printStackTrace();
 		}  
 		return list;
+		
 	}
 	
-	public ArrayList<PromotionPO> show() {
-		ArrayList<PromotionPO> list = new ArrayList<PromotionPO>();
+	public ArrayList<ClassificationPO> show() {
+		ArrayList<ClassificationPO> list = new ArrayList<>();
 		Connection conn = DBManager.getConnection();
-		String sql = "select object from promotion";
+		String sql = "select object from classification";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
@@ -146,10 +135,11 @@ public class PromotionData {
                 byte[] buff = new byte[(int) inBlob.length()];
                 
                 while(-1!=(bis.read(buff, 0, buff.length))){            //一次性全部读到buff中  
-                    ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(buff)); 
-                    PromotionPO po = (PromotionPO) in.readObject();
-                    list.add(po);
-                }
+                    ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(buff));  
+                    ClassificationPO po = (ClassificationPO)in.readObject();                   //读出对象  
+                      
+                    list.add(po);  
+                }  
 			}
 			rs.close();
 			ps.close();
@@ -158,5 +148,6 @@ public class PromotionData {
 			e.printStackTrace();
 		}  
 		return list;
+		
 	}
 }
